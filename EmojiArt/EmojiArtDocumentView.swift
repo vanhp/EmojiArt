@@ -15,16 +15,19 @@ struct EmojiArtDocumentView: View {
     
     var body: some View {
         VStack {
-            ScrollView(.horizontal) {
-                HStack {
-                    ForEach(EmojiArtDocument.palette.map { String($0) }, id: \.self) { emoji in
-                        Text(emoji)
-                            .font(Font.system(size: self.defaultEmojiSize))
-                            .onDrag { NSItemProvider(object: emoji as NSString) }
+            HStack{
+                PaletteChooser()
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(EmojiArtDocument.palette.map { String($0) }, id: \.self) { emoji in
+                            Text(emoji)
+                                .font(Font.system(size: self.defaultEmojiSize))
+                                .onDrag { NSItemProvider(object: emoji as NSString) }
+                        }
                     }
                 }
             }
-            .padding(.horizontal)
+            //.padding(.horizontal)
             GeometryReader { geometry in
                 ZStack {
                     Color.white.overlay(
