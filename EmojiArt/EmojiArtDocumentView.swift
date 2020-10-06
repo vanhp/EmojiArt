@@ -32,7 +32,8 @@ struct EmojiArtDocumentView: View {
                             .scaleEffect(self.zoomScale)
                             .offset(self.panOffset)
                     )
-                        .gesture(self.doubleTapToZoom(in: geometry.size))
+                    .gesture(self.doubleTapToZoom(in: geometry.size))
+                    if self.isLoading{Image(systemName: "hourglass").imageScale(.large).spinning()}
                     ForEach(self.document.emojis) { emoji in
                         Text(emoji.text)
                             .font(animatableWithSize: emoji.fontSize * self.zoomScale)
@@ -109,7 +110,9 @@ struct EmojiArtDocumentView: View {
             }
     }
     
-
+    var isLoading: Bool {
+        document.setBackgroundURL != nil && document.backgroundImage == nil
+    }
         
     private func position(for emoji: EmojiArt.Emoji, in size: CGSize) -> CGPoint {
         var location = emoji.location
