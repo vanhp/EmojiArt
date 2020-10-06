@@ -43,7 +43,11 @@ struct EmojiArtDocumentView: View {
                 .clipped()
                 .gesture(self.panGesture())
                 .gesture(self.zoomGesture())
-                .edgesIgnoringSafeArea([.horizontal, .bottom])
+                .edgesIgnoringSafeArea([.horizontal, .bottom]) // draw over the knot
+                .onReceive(self.document.$backgroundImage) { image in
+                    self.zoomToFit(image, in: geometry.size)
+                }
+                
                 .onDrop(of: ["public.image","public.text"], isTargeted: nil) { providers, location in
                     // SwiftUI bug (as of 13.4)? the location is supposed to be in our coordinate system
                     // however, the y coordinate appears to be in the global coordinate system

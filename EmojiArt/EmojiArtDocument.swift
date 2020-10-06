@@ -17,16 +17,6 @@ class EmojiArtDocument: ObservableObject
     
     // @Published // workaround for property observer problem with property wrappers
     @Published private var emojiArt: EmojiArt
-//
-//    {
-//        willSet {
-//            objectWillChange.send()
-//        }
-//        didSet {
-//            print ("json = \(emojiArt.json?.utf8 ?? "nil")")
-//            UserDefaults.standard.set(emojiArt.json, forKey: EmojiArtDocument.untitled)
-//        }
- //   }
     
     private static let untitled = "EmojiArtDocument.Untitled"
         
@@ -73,19 +63,16 @@ class EmojiArtDocument: ObservableObject
         
     }
     
+    private var fetchImageCancellable: AnyCancellable?
     private func fetchBackgroundImageData() {
         backgroundImage = nil
         if let url = self.emojiArt.backgroundURL {
-            DispatchQueue.global(qos: .userInitiated).async {
-                if let imageData = try? Data(contentsOf: url) {
-                    DispatchQueue.main.async {
-                        if url == self.emojiArt.backgroundURL {
-                            self.backgroundImage = UIImage(data: imageData)
-                            
-                        }
-                    }
-                }
-            }
+            fetchImageCancellable?.cancel() // cancel any pending request
+            fetchImageCancellable = URLSession.shared.dataTaskPublisher(for: url)
+                .map {data, URLResponse in UIImage(data:data)}  // convert tuple into image
+                .receive(on: DispatchQueue.main) // publish on the main thread
+                .replaceError(with: nil)
+                .assign(to: \.backgroundImage, on: self) // use the keypath
         }
         
     }
