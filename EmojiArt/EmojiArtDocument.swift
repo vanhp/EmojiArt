@@ -11,8 +11,16 @@ import Combine
 
 // the viewmodel
 
-class EmojiArtDocument: ObservableObject
+class EmojiArtDocument: ObservableObject, Hashable,Identifiable
 {
+    static func == (lhs: EmojiArtDocument, rhs: EmojiArtDocument) -> Bool {
+        lhs.id == rhs.id
+    }
+    let id: UUID
+    func hash(into hasher: inout Hasher)  {
+        hasher.combine(id)
+    }
+    
     static let palette: String = "⭐️⛈🍎🌏🥨⚾️"
     
     // @Published // workaround for property observer problem with property wrappers
@@ -22,14 +30,17 @@ class EmojiArtDocument: ObservableObject
         
     private var autosaveCancellable: AnyCancellable?
 
-    init() {
+    // this let it call with nil, id, or none
+    init(id: UUID? = nil) {
+            self.id = id ?? UUID()
+            let defaultsKey = "EmojiArtDocument.\(self.id.uuidString)"
             // emojiArt may return nil on init use the default init
-            emojiArt = EmojiArt(json: UserDefaults.standard.data(forKey: EmojiArtDocument.untitled)) ?? EmojiArt()
+            emojiArt = EmojiArt(json: UserDefaults.standard.data(forKey: defaultsKey)) ?? EmojiArt()
           
             // subscribe to emojiArt
             autosaveCancellable = $emojiArt.sink { emojiArt in
                 print("\(emojiArt.json?.utf8 ?? "nil")")
-                UserDefaults.standard.set(emojiArt.json,forKey: EmojiArtDocument.untitled)
+                UserDefaults.standard.set(emojiArt.json,forKey: defaultsKey)
             }
             fetchBackgroundImageData()
     }

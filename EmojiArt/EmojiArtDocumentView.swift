@@ -12,11 +12,24 @@ import SwiftUI
 
 struct EmojiArtDocumentView: View {
     @ObservedObject var document: EmojiArtDocument
+    @State private var chosenPalette: String = ""
+    
+    
+    // how to initialize the @State variable
+    init(document: EmojiArtDocument){
+        self.document = document
+        
+        // this refer to the struct of the state must be init this way for now
+        _chosenPalette = State(wrappedValue: self.document.defaultPalette)
+    }
+    
+    
+    
     
     var body: some View {
         VStack {
             HStack{
-                PaletteChooser()
+                PaletteChooser(document: document, chosenPatte: $chosenPalette)
                 ScrollView(.horizontal) {
                     HStack {
                         ForEach(EmojiArtDocument.palette.map { String($0) }, id: \.self) { emoji in
