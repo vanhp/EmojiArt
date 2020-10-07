@@ -21,8 +21,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         // want to show this view instead when startup
         let store = EmojiArtDocumentStore(named: "Emoji Art")
-        store.addDocument()
-        store.addDocument(named: "Hello world")
+//        store.addDocument()
+//        store.addDocument(named: "Hello world")
         let contentView = EmojiArtDocumentChooser().environmentObject(store)
         
         // Create the SwiftUI view that provides the window contents.

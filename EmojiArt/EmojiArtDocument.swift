@@ -47,6 +47,9 @@ class EmojiArtDocument: ObservableObject, Hashable,Identifiable
         
     @Published private(set) var backgroundImage: UIImage?
     
+    @Published  var steadyStateZoomScale: CGFloat = 1.0
+    @Published  var steadyStatePanOffset:CGFloat = .zero
+    
     var emojis: [EmojiArt.Emoji] { emojiArt.emojis }
     
     // MARK: - Intent(s)
@@ -72,6 +75,16 @@ class EmojiArtDocument: ObservableObject, Hashable,Identifiable
         emojiArt.backgroundURL = url?.imageURL
         fetchBackgroundImageData()
         
+    }
+    
+    var backgroundURL: URL? {
+        get {
+            emojiArt.backgroundURL
+        }
+        set {
+            emojiArt.backgroundURL = newValue?.imageURL
+            fetchBackgroundImageData()
+        }
     }
     
     private var fetchImageCancellable: AnyCancellable?
